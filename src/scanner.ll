@@ -149,7 +149,7 @@ void driver::scan_begin() {
     if (file.empty() || file == "-") {
         yyin = stdin;
     } else if (!(yyin = fopen(file.c_str(), "r"))) {
-        std::cerr << "cannot open " << file << ": " << strerror(errno) << "\n";
+        std::cerr << "error: cannot open " << file << ": " << strerror(errno) << "\n";
         exit(EXIT_FAILURE);
     }
 }
