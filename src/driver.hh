@@ -9,6 +9,7 @@
 #include <map>
 
 #include "parser.hh"
+#include "ast.hh"
 
 /* define the correct yylex prototype for flex */
 #define YY_DECL yy::parser::symbol_type yylex (driver& drv)
@@ -24,9 +25,8 @@ public:
     /* execute parser on filename f */
     int parse(const std::string& f);
 
-    /* current parsing context */
-    std::map<std::string, int> variables;
-    int result;
+    /* parsing result */
+    AST::Program* result;
 
     /* parsing config */
     std::string file;

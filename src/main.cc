@@ -33,7 +33,9 @@ int main(int argc, char** argv) {
         return 0;
     case MODE_PARSE:
         for (; i < argc; ++i) {
-            if (driver().parse(argv[i])) return 1;
+            driver d;
+            if (d.parse(argv[i])) return 1;
+            d.result->write();
         }
         return 0;
     default:

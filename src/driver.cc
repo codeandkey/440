@@ -3,9 +3,7 @@
 
 extern char* yytext;
 
-driver::driver() : trace_parsing(false), trace_scanning(false) {
-    variables["one"] = 1;
-}
+driver::driver() : trace_parsing(false), trace_scanning(false) {}
 
 int driver::parse(const std::string& f) {
     file = f;

@@ -81,6 +81,7 @@
     DECR        "--"
 ;
 
+/* semantic tokens */
 %token <std::string> TYPE       "type"
 %token <std::string> IDENT      "identifier"
 %token <int>         INTCONST   "integer constant"
@@ -88,20 +89,29 @@
 %token <std::string> STRCONST   "string literal"
 %token <char>        CHARCONST  "character constant"
 
+/* nonterminal symbols */
 %type <AST::Program*>                   program              "program"
 %type <AST::Expression*>                expression           "expression"
 %type <std::vector<AST::Variable*>>     variable_declaration "variable declaration"
+%type <std::vector<AST::Variable*>>     parameter_list       "parameter list"
 %type <std::vector<AST::VariableName*>> variable_names       "variable names"
 %type <AST::VariableName*>              variable_name        "variable name"
+%type <AST::Variable*>                  formal_param         "formal parameter"
+%type <AST::Function*>                  function_prototype   "function prototype"
+%type <AST::Function*>                  function_definition  "function definition"
+%type <std::vector<AST::Variable*>>     function_locals      "function locals"
+%type <std::vector<AST::Statement*>>    function_body        "function body"
+%type <AST::Statement*>                 statement            "statement"
 
 %% /* -- GRAMMAR DEFINITION -- */
 %start unit;
 
-unit: program { $1->write(); }
+unit: program { drv.result = $1; }
 
 program:
     %empty                         { $$ = new AST::Program(@$); }
     | program variable_declaration { $$ = $1; $$->push_globals($2); }
+    | program function_prototype   { $$ = $1; $$->push_function($2); }
     ;
 
 variable_declaration:
@@ -116,6 +126,40 @@ variable_names:
 variable_name:
     IDENT                              { $$ = new AST::VariableName(@$, $1); }
     | IDENT LBRACKET INTCONST RBRACKET { $$ = new AST::VariableName(@$, $1, $3); }
+    ;
+
+formal_param:
+    TYPE variable_name { $$ = new AST::Variable(@$, $1, $2); }
+    ;
+
+parameter_list:
+    %empty                              {}
+    | formal_param                      { $$.push_back($1); }
+    | parameter_list COMMA formal_param { $$ = $1; $$.push_back($3); }
+    ;
+
+function_locals:
+    %empty                                 {}
+    | variable_declaration                 { $$ = $1; }
+    | function_locals variable_declaration { $$ = $1; for (auto i: $2) $$.push_back(i); }
+    ;
+
+function_body:
+    %empty                    {}
+    | statement               { $$.push_back($1); }
+    | function_body statement { $$ = $1; $$.push_back($2); }
+    ;
+
+function_prototype:
+    TYPE IDENT LPAR parameter_list RPAR { $$ = new AST::Function(@$, $1, $2, $4); }
+    ;
+
+function_definition:
+    TYPE IDENT LPAR parameter_list RPAR LBRACE function_locals function_body RBRACE { $$ = new AST::Function(@$, $1, $2, $4, $7, $8); }
+    ;
+
+statement:
+    expression SEMI  { $$ = new AST::Statement(); }
     ;
 
 expression: INTCONST { $$ = new AST::IntConst($1); }

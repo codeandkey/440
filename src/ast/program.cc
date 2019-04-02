@@ -29,4 +29,18 @@ void AST::Program::push_function(Function* f) {
             throw yy::parser::syntax_error(f->loc, f->name + " is already defined as a global variable");
         }
     }
+
+    /* then, check if it was declared already.
+     * if it is already declared make sure everything matches */
+    for (auto i : functions) {
+        if (i->name == f->name) {
+            if (i->ret_type != f->ret_type) {
+                throw yy::parser::syntax_error(f->loc, f->name + " already declared with " + std::to_string(i->params.size()) + " arguments at " + *(i->loc.begin.filename) + ":" + std::to_string(i->loc.begin.line));
+            }
+
+            if (i->params.size() != f->params.size()) {
+                throw yy::parser::syntax_error(f->loc, f->name + " was already declared with " + i->ret_type + " at " + *(i->loc.begin.filename) + ":" + std::to_string(i->loc.begin.line));
+            }
+        }
+    }
 }
