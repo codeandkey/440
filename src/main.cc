@@ -32,7 +32,10 @@ int main(int argc, char** argv) {
         }
         return 0;
     case MODE_PARSE:
-        break;
+        for (; i < argc; ++i) {
+            if (driver().parse(argv[i])) return 1;
+        }
+        return 0;
     default:
         std::cerr << "error: invalid execution mode. cannot continue.\n";
         return usage(argv);
