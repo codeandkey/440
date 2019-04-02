@@ -1,0 +1,7 @@
+**/*.o
+src/scanner.cc
+src/parser.hh
+src/parser.cc
+src/location.hh
+compile
+testfile
