@@ -35,17 +35,57 @@
 /* token definitions, nonterminals */
 %define api.token.prefix {TOK_}
 %token
-    END 0  "end of file"
-    ASSIGN "="
-    MINUS  "-"
-    PLUS   "+"
-    LPAREN "("
-    RPAREN ")"
+    END 0       "end of file"
+    FOR         "for"
+    WHILE       "while"
+    DO          "do"
+    IF          "if"
+    ELSE        "else"
+    BREAK       "break"
+    CONTINUE    "continue"
+    RETURN      "return"
+    LPAR        "("
+    RPAR        ")"
+    LBRACKET    "["
+    RBRACKET    "]"
+    LBRACE      "{"
+    RBRACE      "}"
+    COMMA       ","
+    SEMI        ";"
+    QUEST       "?"
+    COLON       ":"
+    EQUALS      "=="
+    NEQUAL      "!="
+    GT          ">"
+    GE          ">="
+    LT          "<"
+    LE          "<="
+    PLUS        "+"
+    MINUS       "-"
+    STAR        "*"
+    SLASH       "/"
+    MOD         "%"
+    TILDE       "~"
+    PIPE        "|"
+    AMP         "&"
+    BANG        "!"
+    DPIPE       "||"
+    DAMP        "&&"
+    ASSIGN      "="
+    PLUSASSIGN  "+="
+    MINUSASSIGN "-="
+    STARASSIGN  "*="
+    SLASHASSIGN "/="
+    INCR        "++"
+    DECR        "--"
 ;
 
-%token <std::string> IDENTIFIER "identifier"
-%token <int>         NUMBER     "number"
-%type  <int>         exp
+%token <std::string> TYPE       "type"
+%token <std::string> IDENT      "identifier"
+%token <int>         INTCONST   "integer constant"
+%token <double>      REALCONST  "real constant"
+%token <std::string> STRCONST   "string literarl"
+%token <char>        CHARCONST  "character constant"
 
 /* define semantic value printing */
 %printer { yyo << $$; } <*>;
@@ -53,23 +93,8 @@
 %% /* -- GRAMMAR DEFINITION -- */
 %start unit;
 
-unit: assignments exp { drv.result = $2; };
+unit: %empty
 
-assignments:
-    %empty                 {}
-  | assignments assignment {};
-
-assignment:
-    "identifier" "=" exp { drv.variables[$1] = $3; };
-
-%left "+" "-";
-
-exp:
-    "number"
-  | "identifier"  { $$ = drv.variables[$1]; }
-  | exp "+" exp   { $$ = $1 + $3; }
-  | exp "-" exp   { $$ = $1 - $3; }
-  | "(" exp ")"   { $$ = $2; }
 %%
 
 void yy::parser::error(const location_type& l, const std::string& m) {

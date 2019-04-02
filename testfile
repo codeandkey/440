@@ -1,0 +1,6 @@
+int main(int argc) {
+    //int
+
+    printf("wow look at my strconst!");
+    char c = '\n';
+}

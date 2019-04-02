@@ -34,7 +34,7 @@ int driver::scan(const std::string& f) {
         }
     } catch (yy::parser::syntax_error& e) {
         std::cerr << "Error in " << *(e.location.begin.filename) << " line " << e.location.begin.line << ":\n\t";
-        std::cerr << e.what();
+        std::cerr << e.what() << "\n";
         scan_end();
         return -1;
     }
