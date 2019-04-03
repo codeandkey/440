@@ -5,8 +5,8 @@
 namespace AST {
     class VariableName : public Node {
     public:
-        VariableName(location& loc, std::string name);
-        VariableName(location& loc, std::string name, int arr_size);
+        VariableName(location loc, std::string name);
+        VariableName(location loc, std::string name, int arr_size);
 
         void write();
 
@@ -17,7 +17,7 @@ namespace AST {
 
     class Variable : public Expression {
     public:
-        Variable(location& loc, std::string base_type, VariableName* name);
+        Variable(location loc, std::string base_type, VariableName* name);
 
         void write();
         std::string type();

@@ -5,7 +5,7 @@
 namespace AST {
     class IntConst : public Expression {
     public:
-        IntConst(location&, int);
+        IntConst(location, int);
 
         void write();
         std::string type();
@@ -15,7 +15,7 @@ namespace AST {
 
     class RealConst : public Expression {
     public:
-        RealConst(location&, double);
+        RealConst(location, double);
 
         void write();
         std::string type();
@@ -25,7 +25,7 @@ namespace AST {
 
     class StrConst : public Expression {
     public:
-        StrConst(location&, std::string);
+        StrConst(location, std::string);
 
         void write();
         std::string type();
@@ -35,7 +35,7 @@ namespace AST {
 
     class CharConst : public Expression {
     public:
-        CharConst(location&, char);
+        CharConst(location, char);
 
         void write();
         std::string type();

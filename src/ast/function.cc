@@ -1,16 +1,16 @@
 #include "function.hh"
 
-AST::Function::Function(location& loc,
+AST::Function::Function(location loc,
                         std::string ret_type,
                         std::string name,
                         std::vector<Variable*> params)
-    : Node(loc), ret_type(ret_type), params(params), defined(false) {}
+    : Node(loc), name(name), ret_type(ret_type), params(params), defined(false) {}
 
-AST::Function::Function(location& loc, std::string ret_type, std::string name,
+AST::Function::Function(location loc, std::string ret_type, std::string name,
                         std::vector<Variable*> params,
                         std::vector<Variable*> locals,
                         std::vector<Statement*> body)
-    : Node(loc), ret_type(ret_type), params(params), body(body), defined(true) {}
+    : Node(loc), name(name), ret_type(ret_type), params(params), body(body), defined(true) {}
 
 void AST::Function::write() {
     std::cout << "<Function name=" << name << " ret_type=" << ret_type << " defined=" << defined << ">\n";

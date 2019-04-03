@@ -112,6 +112,7 @@ program:
     %empty                         { $$ = new AST::Program(@$); }
     | program variable_declaration { $$ = $1; $$->push_globals($2); }
     | program function_prototype   { $$ = $1; $$->push_function($2); }
+    | program function_definition  { $$ = $1; $$->push_function($2); }
     ;
 
 variable_declaration:
@@ -124,8 +125,8 @@ variable_names:
     ;
 
 variable_name:
-    IDENT                              { $$ = new AST::VariableName(@$, $1); }
-    | IDENT LBRACKET INTCONST RBRACKET { $$ = new AST::VariableName(@$, $1, $3); }
+    IDENT                              { $$ = new AST::VariableName(@1, $1); }
+    | IDENT LBRACKET INTCONST RBRACKET { $$ = new AST::VariableName(@1, $1, $3); }
     ;
 
 formal_param:
@@ -151,18 +152,18 @@ function_body:
     ;
 
 function_prototype:
-    TYPE IDENT LPAR parameter_list RPAR { $$ = new AST::Function(@$, $1, $2, $4); }
+    TYPE IDENT LPAR parameter_list RPAR SEMI { $$ = new AST::Function(@2, $1, $2, $4); }
     ;
 
 function_definition:
-    TYPE IDENT LPAR parameter_list RPAR LBRACE function_locals function_body RBRACE { $$ = new AST::Function(@$, $1, $2, $4, $7, $8); }
+    TYPE IDENT LPAR parameter_list RPAR LBRACE function_locals function_body RBRACE { $$ = new AST::Function(@2, $1, $2, $4, $7, $8); }
     ;
 
 statement:
-    expression SEMI  { $$ = new AST::Statement(); }
+    expression SEMI  { $$ = new AST::ExpressionStatement(@1, $1); }
     ;
 
-expression: INTCONST { $$ = new AST::IntConst($1); }
+expression: INTCONST { $$ = new AST::IntConst(@1, $1); }
 
 %%
 

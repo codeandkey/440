@@ -6,7 +6,7 @@
 namespace AST {
     class Program : public Node {
     public:
-        Program(location&);
+        Program(location);
 
         void write();
         void push_globals(std::vector<Variable*>);
