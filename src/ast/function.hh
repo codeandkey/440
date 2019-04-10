@@ -4,15 +4,17 @@
 #include "statement.hh"
 
 namespace AST {
+    class Scope;
+
     class Function : public Node {
     public:
-        Function(location, std::string ret_type, std::string name, std::vector<Variable*> params);
-        Function(location, std::string ret_type, std::string name, std::vector<Variable*> params, std::vector<Variable*> locals, std::vector<Statement*> body);
+        Function(location, std::string ret_type, std::string name, Scope* params);
+        Function(location, std::string ret_type, std::string name, Scope* params, Scope* locals, std::vector<Statement*> body);
 
         void write();
 
         std::string name, ret_type;
-        std::vector<Variable*> locals, params;
+        Scope* scope, *locals, *params;
         std::vector<Statement*> body;
         bool defined;
     };

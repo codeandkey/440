@@ -92,14 +92,14 @@
 /* nonterminal symbols */
 %type <AST::Program*>                   program              "program"
 %type <AST::Expression*>                expression           "expression"
-%type <std::vector<AST::Variable*>>     variable_declaration "variable declaration"
-%type <std::vector<AST::Variable*>>     parameter_list       "parameter list"
+%type <AST::Scope*>                     variable_declaration "variable declaration"
+%type <AST::Scope*>                     parameter_list       "parameter list"
 %type <std::vector<AST::VariableName*>> variable_names       "variable names"
 %type <AST::VariableName*>              variable_name        "variable name"
 %type <AST::Variable*>                  formal_param         "formal parameter"
 %type <AST::Function*>                  function_prototype   "function prototype"
 %type <AST::Function*>                  function_definition  "function definition"
-%type <std::vector<AST::Variable*>>     function_locals      "function locals"
+%type <AST::Scope*>                     function_locals      "function locals"
 %type <std::vector<AST::Statement*>>    function_body        "function body"
 %type <AST::Statement*>                 statement            "statement"
 
@@ -116,7 +116,7 @@ program:
     ;
 
 variable_declaration:
-    TYPE variable_names SEMI { for (auto v : $2) $$.push_back(new AST::Variable(@$, $1, v)); }
+    TYPE variable_names SEMI { $$ = new AST::Scope(@$, $1, $2); }
     ;
 
 variable_names:
@@ -134,15 +134,15 @@ formal_param:
     ;
 
 parameter_list:
-    %empty                              {}
-    | formal_param                      { $$.push_back($1); }
-    | parameter_list COMMA formal_param { $$ = $1; $$.push_back($3); }
+    %empty                              { $$ = new AST::Scope(@$); }
+    | formal_param                      { $$ = new AST::Scope(@1, $1); }
+    | parameter_list COMMA formal_param { $$ = $1; $$->push_variable($3); }
     ;
 
 function_locals:
     %empty                                 {}
     | variable_declaration                 { $$ = $1; }
-    | function_locals variable_declaration { $$ = $1; for (auto i: $2) $$.push_back(i); }
+    | function_locals variable_declaration { $$ = new AST::Scope(@$, $1, $2); }
     ;
 
 function_body:
