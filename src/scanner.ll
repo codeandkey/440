@@ -21,7 +21,7 @@
     yy::parser::symbol_type make_CHARCONST (const std::string&s, const yy::parser::location_type& loc);
 %}
 
-id        [a-zA-Z][a-zA-Z0-9]*
+id        [a-zA-Z_][a-zA-Z0-9_]*
 intconst  -?[0-9]+
 realconst -?(([0-9]+(\.[0-9]+)?(e[0-9]+)?)|(\.[0-9]+))f?
 strconst  \"(\\.|[^\\\"])*\" 

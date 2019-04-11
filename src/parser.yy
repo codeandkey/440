@@ -97,6 +97,7 @@
 %type <AST::Scope*>                     parameter_list       "parameter list"
 %type <std::vector<AST::VariableName*>> variable_names       "variable names"
 %type <AST::VariableName*>              variable_name        "variable name"
+%type <AST::VariableName*>              parameter_name       "parameter name"
 %type <AST::Variable*>                  formal_param         "formal parameter"
 %type <AST::Function*>                  function_prototype   "function prototype"
 %type <AST::Function*>                  function_definition  "function definition"
@@ -139,8 +140,13 @@ variable_name:
     | IDENT LBRACKET INTCONST RBRACKET { $$ = new AST::VariableName(@1, $1, $3); }
     ;
 
+parameter_name:
+    IDENT                     { $$ = new AST::VariableName(@1, $1); }
+    | IDENT LBRACKET RBRACKET { $$ = new AST::VariableName(@1, $1, 0); }
+    ;
+
 formal_param:
-    TYPE variable_name { $$ = new AST::Variable(@$, $1, $2); }
+    TYPE parameter_name { $$ = new AST::Variable(@$, $1, $2); }
     ;
 
 parameter_list:

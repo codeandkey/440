@@ -28,3 +28,11 @@ void AST::Function::write() {
     for (auto i : body) i->write();
     std::cout << "</Function>\n";
 }
+
+void AST::Function::check_types(AST::Scope* global_scope, bool verbose) {
+    if (!defined) return;
+
+    for (auto i : body) {
+        i->check_types(global_scope, this, verbose);
+    }
+}

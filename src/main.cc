@@ -2,6 +2,7 @@
 
 #define MODE_LEXER 1
 #define MODE_PARSE 2
+#define MODE_TYPES 3
 
 int usage(char** argv);
 
@@ -13,6 +14,7 @@ int main(int argc, char** argv) {
         std::string arg(argv[i]);
         if (arg == "-l" || arg == "--lex")     { mode |= MODE_LEXER; continue; }
         if (arg == "-p" || arg == "--parse")   { mode |= MODE_PARSE; continue; }
+        if (arg == "-t" || arg == "--type")    { mode |= MODE_TYPES; continue; }
         if (arg == "-v" || arg == "--verbose") { opt_verbose = true; continue; }
         if (arg == "--")                       { ++i; break; }
 
@@ -36,6 +38,13 @@ int main(int argc, char** argv) {
             driver d;
             if (d.parse(argv[i])) return 1;
             d.result->write();
+        }
+        return 0;
+    case MODE_TYPES:
+        for (; i < argc; ++i) {
+            driver d;
+            if (d.parse(argv[i])) return 1;
+            if (d.check_types(true)) return 1;
         }
         return 0;
     default:

@@ -40,3 +40,17 @@ int driver::scan(const std::string& f) {
     scan_end();
     return 0;
 }
+
+int driver::check_types(bool verbose) {
+    if (!result) return 1;
+
+    try {
+        result->check_types(verbose);
+    } catch (yy::parser::syntax_error& e) {
+        std::cerr << "Error in " << *(e.location.begin.filename) << " line " << e.location.begin.line << ":\n\t";
+        std::cerr << e.what() << "\n";
+        return -1;
+    }
+
+    return 0;
+}

@@ -1,7 +1,14 @@
 #include "statement.hh"
+#include "function.hh"
+#include "scope.hh"
+#include "../parser.hh"
 
 /* Statement base class */
 AST::Statement::Statement(location loc) : Node(loc) {}
+
+void AST::Statement::check_types(Scope* global_scope, Function* func, bool verbose) {
+    return;
+}
 
 /* ExpressionStatement */
 AST::ExpressionStatement::ExpressionStatement(location loc, AST::Expression* expr) : Statement(loc), expr(expr) {}
@@ -10,6 +17,11 @@ void AST::ExpressionStatement::write() {
     std::cout << "<ExpressionStatement>\n";
     expr->write();
     std::cout << "</ExpressionStatement>\n";
+}
+
+void AST::ExpressionStatement::check_types(Scope* global_scope, Function* func, bool verbose) {
+    std::string expr_type = expr->type(global_scope, func);
+    if (verbose) std::cout << "Expression at " << *(loc.begin.filename) << ":" << std::to_string(loc.begin.line) << " has type " << expr_type << "\n";
 }
 
 /* BreakStatement */
@@ -25,6 +37,22 @@ void AST::ReturnStatement::write() {
     std::cout << "<ReturnStatement>\n";
     if (expr) expr->write();
     std::cout << "</ReturnStatement>\n";
+}
+
+void AST::ReturnStatement::check_types(Scope* scope, Function* func, bool verbose) {
+    if (func->ret_type == "void" && expr) {
+        throw yy::parser::syntax_error(loc, "return statement with value, in function returning void");
+    }
+
+    if (!expr && func->ret_type != "void") {
+        throw yy::parser::syntax_error(loc, "return statement with no value, in function returning " + func->ret_type);
+    }
+
+    std::string expr_type = expr ? expr->type(scope, func) : "void";
+
+    if (expr_type != func->ret_type) {
+        throw yy::parser::syntax_error(loc, "mismatched types; cannot return '" + expr_type + "' from function returning " + func->ret_type);
+    }
 }
 
 /* IfStatement */
@@ -45,6 +73,22 @@ void AST::IfStatement::write() {
         for (auto i : else_body) i->write();
     }
     std::cout << "</IfStatement>\n";
+}
+
+void AST::IfStatement::check_types(Scope* global_scope, Function* func, bool verbose) {
+    std::string cond_type = cond->type(global_scope, func);
+
+    if (cond_type != "int" && cond_type != "char" && cond_type != "float") {
+        throw yy::parser::syntax_error(loc, "invalid condition type " + cond_type + " in 'if' statement");
+    }
+
+    for (auto i : body) {
+        i->check_types(global_scope, func, verbose);
+    }
+
+    for (auto i : else_body) {
+        i->check_types(global_scope, func, verbose);
+    }
 }
 
 /* ForStatement */
@@ -70,6 +114,23 @@ void AST::ForStatement::write() {
     std::cout << "</ForStatement>\n";
 }
 
+void AST::ForStatement::check_types(Scope* global_scope, Function* func, bool verbose) {
+    if (cond) {
+        std::string cond_type = cond->type(global_scope, func);
+
+        if (cond_type != "int" && cond_type != "char" && cond_type != "float") {
+            throw yy::parser::syntax_error(loc, "invalid condition type " + cond_type + " in 'for' statement");
+        }
+    }
+
+    if (init) init->type(global_scope, func);
+    if (next) next->type(global_scope, func);
+
+    for (auto i : body) {
+        i->check_types(global_scope, func, verbose);
+    }
+}
+
 /* WhileStatement */
 AST::WhileStatement::WhileStatement(location loc, Expression* cond, std::vector<Statement*> body)
     : Statement(loc), cond(cond), body(body) {}
@@ -83,6 +144,18 @@ void AST::WhileStatement::write() {
     std::cout << "</WhileStatement>\n";
 }
 
+void AST::WhileStatement::check_types(Scope* global_scope, Function* func, bool verbose) {
+    std::string cond_type = cond->type(global_scope, func);
+
+    if (cond_type != "int" && cond_type != "char" && cond_type != "float") {
+        throw yy::parser::syntax_error(loc, "invalid condition type " + cond_type + " in 'while' statement");
+    }
+
+    for (auto i : body) {
+        i->check_types(global_scope, func, verbose);
+    }
+}
+
 /* DoWhileStatement */
 AST::DoWhileStatement::DoWhileStatement(location loc, Expression* cond, std::vector<Statement*> body)
     : Statement(loc), cond(cond), body(body) {}
@@ -94,4 +167,16 @@ void AST::DoWhileStatement::write() {
     std::cout << "(body)\n";
     for (auto i : body) i->write();
     std::cout << "</DoWhileStatement>\n";
+}
+
+void AST::DoWhileStatement::check_types(Scope* global_scope, Function* func, bool verbose) {
+    std::string cond_type = cond->type(global_scope, func);
+
+    if (cond_type != "int" && cond_type != "char" && cond_type != "float") {
+        throw yy::parser::syntax_error(loc, "invalid condition type " + cond_type + " in 'while' statement");
+    }
+
+    for (auto i : body) {
+        i->check_types(global_scope, func, verbose);
+    }
 }

@@ -18,3 +18,9 @@ void AST::Program::push_globals(AST::Scope* s) {
 void AST::Program::push_function(Function* f) {
     scope->push_function(f);
 }
+
+void AST::Program::check_types(bool verbose) {
+    for (auto i : scope->functions) {
+        i->check_types(scope, verbose);
+    }
+}

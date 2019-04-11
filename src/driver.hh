@@ -25,6 +25,9 @@ public:
     /* execute parser on filename f */
     int parse(const std::string& f);
 
+    /* execute type checker on result */
+    int check_types(bool verbose);
+
     /* parsing result */
     AST::Program* result;
 

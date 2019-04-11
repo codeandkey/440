@@ -2,17 +2,20 @@
 #include "node.hh"
 
 namespace AST {
+    class Scope;
+    class Function;
+
     class Expression : public Node {
     public:
         Expression(location);
-        virtual std::string type();
+        virtual std::string type(Scope* global_scope, Function* func);
     };
 
     class LValue : public Node {
     public:
         LValue(location, std::string name, Expression* expr = NULL);
 
-        std::string type();
+        std::string type(Scope* global_scope, Function* func);
         void write();
 
         std::string name;
@@ -24,7 +27,7 @@ namespace AST {
         IntConst(location, int);
 
         void write();
-        std::string type();
+        std::string type(Scope* global_scope, Function* func);
 
         int n;
     };
@@ -34,7 +37,7 @@ namespace AST {
         RealConst(location, double);
 
         void write();
-        std::string type();
+        std::string type(Scope* global_scope, Function* func);
 
         double n;
     };
@@ -44,7 +47,7 @@ namespace AST {
         StrConst(location, std::string);
 
         void write();
-        std::string type();
+        std::string type(Scope* global_scope, Function* func);
 
         std::string val;
     };
@@ -54,7 +57,7 @@ namespace AST {
         CharConst(location, char);
 
         void write();
-        std::string type();
+        std::string type(Scope* global_scope, Function* func);
 
         char val;
     };
@@ -64,7 +67,7 @@ namespace AST {
         IdentifierExpression(location, std::string name);
 
         void write();
-        std::string type();
+        std::string type(Scope* global_scope, Function* func);
 
         std::string name;
     };
@@ -74,7 +77,7 @@ namespace AST {
         AddressExpression(location, std::string name);
 
         void write();
-        std::string type();
+        std::string type(Scope* global_scope, Function* func);
 
         std::string name;
     };
@@ -84,7 +87,7 @@ namespace AST {
         IndexExpression(location, std::string name, Expression* ind);
 
         void write();
-        std::string type();
+        std::string type(Scope* global_scope, Function* func);
 
         std::string name;
         Expression* ind;
@@ -95,7 +98,7 @@ namespace AST {
         CallExpression(location, std::string name, std::vector<Expression*> args);
 
         void write();
-        std::string type();
+        std::string type(Scope* global_scope, Function* func);
 
         std::string name;
         std::vector<Expression*> args;
@@ -114,7 +117,7 @@ namespace AST {
         AssignmentExpression(location, LValue* lhs, Type t, Expression* rhs);
 
         void write();
-        std::string type();
+        std::string type(Scope* global_scope, Function* func);
 
         LValue* lhs;
         Type t;
@@ -131,7 +134,7 @@ namespace AST {
         IncDecExpression(location, LValue* operand, Type t, bool op_on_left);
 
         void write();
-        std::string type();
+        std::string type(Scope* global_scope, Function* func);
 
         LValue* operand;
         Type t;
@@ -149,7 +152,7 @@ namespace AST {
         UnaryOpExpression(location, Expression* operand, Type t);
 
         void write();
-        std::string type();
+        std::string type(Scope* global_scope, Function* func);
 
         Expression* operand;
         Type t;
@@ -178,7 +181,7 @@ namespace AST {
         BinaryOpExpression(location, Expression* lhs, Expression* rhs, Type t);
 
         void write();
-        std::string type();
+        std::string type(Scope* global_scope, Function* func);
 
         Expression* lhs, *rhs;
         Type t;
@@ -189,7 +192,7 @@ namespace AST {
         TernaryOpExpression(location, Expression* cond, Expression* pos, Expression* neg);
 
         void write();
-        std::string type();
+        std::string type(Scope* global_scope, Function* func);
 
         Expression* cond, *pos, *neg;
     };
@@ -199,7 +202,7 @@ namespace AST {
         CastExpression(location, std::string cast_type, Expression* rhs);
 
         void write();
-        std::string type();
+        std::string type(Scope* global_scope, Function* func);
 
         std::string cast_type;
         Expression* rhs;

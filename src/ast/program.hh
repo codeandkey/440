@@ -13,6 +13,8 @@ namespace AST {
         void push_globals(Scope* s);
         void push_function(Function*);
 
+        void check_types(bool verbose);
+
         Scope* scope;
     };
 }
