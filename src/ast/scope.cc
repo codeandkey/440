@@ -107,6 +107,7 @@ void AST::Scope::push_function(AST::Function* f) {
                 i->locals = f->locals;
                 i->body = f->body;
                 i->loc = f->loc;
+                i->scope = f->scope;
                 i->defined = true;
                 return;
             }

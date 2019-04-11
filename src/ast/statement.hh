@@ -28,10 +28,10 @@ namespace AST {
 
     class ReturnStatement : public Statement {
     public:
-        ReturnStatement(location);
         ReturnStatement(location, Expression* expr);
 
-        bool has_expr; /* could just use a NULL signal but for clarity we keep a boolean flag */
+        void write();
+
         Expression* expr;
     };
 
@@ -39,6 +39,8 @@ namespace AST {
     public:
         IfStatement(location, Expression* cond, std::vector<Statement*> body);
         IfStatement(location, Expression* cond, std::vector<Statement*> body, std::vector<Statement*> else_body);
+
+        void write();
 
         bool has_else;
         Expression* cond;
@@ -49,6 +51,8 @@ namespace AST {
     public:
         ForStatement(location, Expression* init, Expression* cond, Expression* next, std::vector<Statement*> body);
 
+        void write();
+
         /* 3 optional values force us to use NULL pointers when there is no expression */
         Expression* init, *cond, *next;
         std::vector<Statement*> body;
@@ -58,6 +62,8 @@ namespace AST {
     public:
         WhileStatement(location, Expression* cond, std::vector<Statement*> body);
 
+        void write();
+
         Expression* cond;
         std::vector<Statement*> body;
     };
@@ -65,6 +71,8 @@ namespace AST {
     class DoWhileStatement : public Statement {
     public:
         DoWhileStatement(location, Expression* cond, std::vector<Statement*> body);
+
+        void write();
 
         Expression* cond;
         std::vector<Statement*> body;

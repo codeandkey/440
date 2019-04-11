@@ -7,5 +7,4 @@
 #include "ast/node.hh"
 #include "ast/expression.hh"
 #include "ast/program.hh"
-#include "ast/constants.hh"
 #include "ast/scope.hh"
