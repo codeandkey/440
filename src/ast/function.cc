@@ -72,6 +72,10 @@ void AST::Function::reserve(AST::Program* prg) {
 
         if (i->name->is_array) {
             num_slots = i->name->array_size;
+
+            if (i->base_type == "char") {
+                num_slots = (num_slots + 1) / 4;
+            }
         }
 
         i->code_location = "L" + std::to_string(local_counter);

@@ -40,7 +40,13 @@ std::string AST::Program::generate_ir() {
     int global_counter = 0;
     for (auto i : scope->variables) {
         int num_slots = 1;
-        if (i->name->is_array) num_slots = i->name->array_size;
+        if (i->name->is_array){
+            num_slots = i->name->array_size;
+
+            if (i->base_type == "char") {
+                num_slots = (num_slots + 1) / 4;
+            }
+        }
 
         i->code_location = "G" + std::to_string(global_counter);
         global_counter += num_slots;
