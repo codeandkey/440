@@ -14,6 +14,7 @@ namespace AST {
         void push_function(Function*);
 
         void check_types(bool verbose);
+        std::string generate_ir();
 
         Scope* scope;
     };

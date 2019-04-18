@@ -36,3 +36,11 @@ void AST::Function::check_types(AST::Scope* global_scope, bool verbose) {
         i->check_types(global_scope, this, verbose);
     }
 }
+
+void AST::Function::ic_reserve_ids(Gen::CodegenState* gen) {
+    ic_function_id = gen->new_function_id();
+
+    for (auto i : body) {
+        i->ic_reserve_ids(gen);
+    }
+}

@@ -28,8 +28,14 @@ public:
     /* execute type checker on result */
     int check_types(bool verbose);
 
+    /* execute intermediate gen on result */
+    int generate_ir();
+
     /* parsing result */
     AST::Program* result;
+
+    /* IR result */
+    std::string ir_result;
 
     /* parsing config */
     std::string file;

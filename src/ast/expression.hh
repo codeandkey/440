@@ -1,5 +1,6 @@
 #pragma once
 #include "node.hh"
+#include "../gen.hh"
 
 namespace AST {
     class Scope;
@@ -9,6 +10,7 @@ namespace AST {
     public:
         Expression(location);
         virtual std::string type(Scope* global_scope, Function* func);
+        virtual void ic_reserve_ids(Gen::CodegenState* gen);
     };
 
     class LValue : public Node {
@@ -17,6 +19,7 @@ namespace AST {
 
         std::string type(Scope* global_scope, Function* func);
         void write();
+        void ic_reserve_ids(Gen::CodegenState* gen);
 
         std::string name;
         Expression* expr;

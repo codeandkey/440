@@ -6,6 +6,8 @@ AST::Expression::Expression(location loc) : Node(loc) {}
 
 std::string AST::Expression::type(Scope* global_scope, Function* func) { return "NOTYPE"; }
 
+void AST::Expression::ic_reserve_ids(Gen::CodegenState* gen) {}
+
 /* LValue */
 AST::LValue::LValue(location loc, std::string name, Expression* expr) : Node(loc), name(name), expr(expr) {}
 
@@ -38,18 +40,22 @@ std::string AST::LValue::type(Scope* global_scope, Function* func) {
 AST::IntConst::IntConst(location loc, int n) : Expression(loc), n(n) {}
 void AST::IntConst::write() { std::cout << "<IntConst n=" << n << ">\n"; }
 std::string AST::IntConst::type(Scope* global_scope, Function* func) { return "int"; }
+void AST::IntConst::ic_reserve_ids(Gen::CodegenState* gen) { ic_const_id = gen->new_constant_id(n); }
 
 AST::RealConst::RealConst(location loc, double n) : Expression(loc), n(n) {}
 void AST::RealConst::write() { std::cout << "<RealConst n=" << n << ">\n"; }
 std::string AST::RealConst::type(Scope* global_scope, Function* func) { return "float"; }
+void AST::RealConst::ic_reserve_ids(Gen::CodegenState* gen) { ic_const_id = gen->new_constant_id(*((uint32_t*) &n)); }
 
 AST::StrConst::StrConst(location loc, std::string val) : Expression(loc), val(val) {}
 void AST::StrConst::write() { std::cout << "<StrConst val=\"" << val << "\">\n"; }
 std::string AST::StrConst::type(Scope* global_scope, Function* func) { return "char[]"; }
+void AST::StrConst::ic_reserve_ids(Gen::CodegenState* gen) { ic_const_id = gen->new_constant_id(0); }
 
 AST::CharConst::CharConst(location loc, char val) : Expression(loc), val(val) {}
 void AST::CharConst::write() { std::cout << "<CharConst val='" << val << "'>\n"; }
 std::string AST::CharConst::type(Scope* global_scope, Function* func) { return "char"; }
+void AST::CharConst::ic_reserve_ids(Gen::CodegenState* gen) { ic_const_id = gen->new_constant_id(n); }
 
 /* IdentifierExpression */
 AST::IdentifierExpression::IdentifierExpression(location loc, std::string name) : Expression(loc), name(name) {}

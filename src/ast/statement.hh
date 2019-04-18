@@ -1,6 +1,7 @@
 #pragma once
 #include "node.hh"
 #include "expression.hh"
+#include "../gen.hh"
 
 namespace AST {
     class Scope;
@@ -11,6 +12,7 @@ namespace AST {
         Statement(location loc);
 
         virtual void check_types(Scope* global_scope, Function* func, bool verbose);
+        virtual void ic_reserve_ids(Gen::CodegenState* gen);
     };
 
     class ExpressionStatement : public Statement {
@@ -19,6 +21,7 @@ namespace AST {
         void write();
 
         void check_types(Scope* global_scope, Function* func, bool verbose);
+        void ic_reserve_ids(Gen::CodegenState* gen);
 
         Expression* expr;
     };

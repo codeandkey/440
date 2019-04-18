@@ -2,7 +2,8 @@
 
 #define MODE_LEXER 1
 #define MODE_PARSE 2
-#define MODE_TYPES 3
+#define MODE_TYPES 4
+#define MODE_GENIR 8
 
 int usage(char** argv);
 
@@ -15,6 +16,7 @@ int main(int argc, char** argv) {
         if (arg == "-l" || arg == "--lex")     { mode |= MODE_LEXER; continue; }
         if (arg == "-p" || arg == "--parse")   { mode |= MODE_PARSE; continue; }
         if (arg == "-t" || arg == "--type")    { mode |= MODE_TYPES; continue; }
+        if (arg == "-i" || arg == "--ir")      { mode |= MODE_GENIR; continue; }
         if (arg == "-v" || arg == "--verbose") { opt_verbose = true; continue; }
         if (arg == "--")                       { ++i; break; }
 
@@ -45,6 +47,15 @@ int main(int argc, char** argv) {
             driver d;
             if (d.parse(argv[i])) return 1;
             if (d.check_types(true)) return 1;
+        }
+        return 0;
+    case MODE_GENIR:
+        for (; i < argc; ++i) {
+            driver d;
+            if (d.parse(argv[i])) return 1;
+            if (d.check_types(false)) return 1;
+            if (d.generate_ir()) return 1;
+            std::cout << "; generated code for " << argv[i] << "\n" << d.ir_result;
         }
         return 0;
     default:

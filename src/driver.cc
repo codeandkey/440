@@ -54,3 +54,17 @@ int driver::check_types(bool verbose) {
 
     return 0;
 }
+
+int driver::generate_ir() {
+    if (!result) return 1;
+
+    try {
+        ir_result = result->generate_ir();
+    } catch (yy::parser::syntax_error& e) {
+        std::cerr << "Error in " << *(e.location.begin.filename) << " line " << e.location.begin.line << ":\n\t";
+        std::cerr << e.what() << "\n";
+        return -1;
+    }
+
+    return 0;
+}
