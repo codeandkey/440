@@ -1,0 +1,63 @@
+\documentclass{article}
+\usepackage{float}
+\begin{document}
+\noindent
+Justin Stanley \\
+COMS 440 Spring 2019 \\
+This project can be cloned through the following: \\
+\texttt{git://git.linux.iastate.edu:jtst/jtst-coms440} \\
+\texttt{https://git.linux.iastate.edu/jtst/jtst-coms440} \\
+\begin{center}\Large{Documentation}\end{center}
+\vspace{0.5cm}
+\hrule
+\vspace{0.5cm}
+Note: For Part 4 of the project I decided to rewrite all of the previous parts as well. So, the documentation for lexing, parsing, and type checking have been updated.
+\section{Lexer}
+\subsection{Design}
+The updated lexer uses a simpler, basic flex implementation to keep things clean for the parser.
+The compiler uses a basic flex-based lexer. The source for the lexer is in \texttt{scanner.ll}.
+The lexer is written with many of the built in integrations with Bison.
+\section{Parser}
+\subsection{design}
+The compiler uses a standard Bison-based parser, except it has been generated for a C++-based template.
+This slightly changes how the AST is built and makes things simpler in my opinion.
+\subsection{data structures}
+All AST nodes inherit from the \texttt{AST::Node} class in \texttt{ast/node.hh}. Each node tracks its location in the source code.
+The parser constructs different \texttt{AST} subclasses while building the parse tree. The root node type is \texttt{AST::Program}.
+The \texttt{AST::Scope} class maintains a name-safe list of variables and functions, and is used in multiple contexts (\texttt{AST::Program}, \texttt{AST::Function}).
+\section{Type checker}
+\subsection{design}
+The type checker is implemented through the \texttt{AST}. Polymorphism is used to recursively type check different types of statements and expressions.
+Return statements are checked against the function return type, and all expressions are recursively checked based on their definition as well.
+\section{Code generation}
+\subsection{design}
+Code generation is also implemented through the \texttt{AST}. Polymorphism is used in a very similar fashion to type checking.
+The \texttt{AST::Program} has a \texttt{generate\_ir} function which recursively generates all of the code for the program.
+As our target architecture is stack-based, there was no need for register allocation. Each code generation function instead has a flag which indicates if a result from the code group should be left on the stack afterwards.
+This allows for a great deal of basic optimization -- for instance, if \texttt{-(1+2);} appears as a statement no code will be generated (as the result is simply discarded).
+However, this optimization is still safe with evaluation; \texttt{-(main());} will still generate code to call the \texttt{main()} function, although the return value will be discarded and no unary operation is executed.
+\texttt{AST::LValue} also required a special type of code generation, as some operations needed to retrieve and store a value seperately -- the generation functions were named \texttt{gen\_store\_code} and \texttt{gen\_retrieve\_code}.
+\section{Sources}
+Any \texttt{.hh} files in this list have their implementation in their respective \texttt{.cc} file.\\
+\begin{center}
+\begin{table}[H]
+\begin{tabular}{ll}
+\hline
+\multicolumn{1}{|l|}{filename} & \multicolumn{1}{l|}{purpose} \\ \hline
+scanner.ll                     & lexer source                 \\
+parser.yy                      & parser source                \\
+ast.hh                         & all AST types                \\
+driver.hh                      & compiler unit/state          \\
+util.hh                        & utility functions            \\
+main.cc                        & entry point                  \\
+ast/expression.hh              & AST expression types         \\
+ast/program.hh                 & AST program type             \\
+ast/function.hh                & AST function type            \\
+ast/node.hh                    & AST base node type           \\
+ast/scope.hh                   & AST scope type               \\
+ast/statement.hh               & AST statement types          \\
+ast/variable.hh                & AST variable types          
+\end{tabular}
+\end{table}
+\end{center}
+\end{document}

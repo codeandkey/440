@@ -65,6 +65,6 @@ int main(int argc, char** argv) {
 }
 
 int usage(char** argv) {
-    std::cout << "usage:\n\t" << *argv << " [-v] {-l,-p} <filename> (...)\n";
+    std::cout << "usage:\n\t" << *argv << " [-v] {-l,-p,-i} <filename> (...)\n";
     return EXIT_FAILURE;
 }

@@ -161,7 +161,12 @@ std::string AST::IdentifierExpression::type(Scope* global_scope, Function* func)
 
 std::string AST::IdentifierExpression::gen_code(Scope* global_scope, Function* func, bool keep_result) {
     if (!keep_result) return "";
-    return "    push " + var->code_location + "\n";
+
+    if (var->name->is_array) {
+        return "    ptrto " + var->code_location + "\n";
+    } else {
+        return "    push " + var->code_location + "\n";
+    }
 }
 
 /* AddressExpression */

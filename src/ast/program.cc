@@ -39,7 +39,11 @@ std::string AST::Program::generate_ir() {
     /* 0. reserve global locations */
     int global_counter = 0;
     for (auto i : scope->variables) {
-        i->code_location = "G" + std::to_string(global_counter++);
+        int num_slots = 1;
+        if (i->name->is_array) num_slots = i->name->array_size;
+
+        i->code_location = "G" + std::to_string(global_counter);
+        global_counter += num_slots;
     }
 
     /* see how many builtins we have */

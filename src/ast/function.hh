@@ -26,5 +26,7 @@ namespace AST {
         int function_number; /* set by AST::Program before code gen unless the function is builtin */
         void reserve(AST::Program* prg);
         std::string gen_code(Scope* global_scope);
+
+        int local_counter = 0; /* counter for local variables, needed for array types */
     };
 }

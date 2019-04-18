@@ -61,14 +61,21 @@ void AST::Function::reserve(AST::Program* prg) {
     /* function reservation */
 
     /* 0. reserve parameter locations */
-    int local_counter = 0;
+    local_counter = 0;
     for (auto i : params->variables) {
         i->code_location = "L" + std::to_string(local_counter++);
     }
 
     /* 1. reserve local locations */
     for (auto i : locals->variables) {
-        i->code_location = "L" + std::to_string(local_counter++);
+        int num_slots = 1;
+
+        if (i->name->is_array) {
+            num_slots = i->name->array_size;
+        }
+
+        i->code_location = "L" + std::to_string(local_counter);
+        local_counter += num_slots;
     }
 
     /* 2. walk statements for constants */
@@ -83,7 +90,7 @@ std::string AST::Function::gen_code(Scope* global_scope) {
 
     output += "  .params " + std::to_string(params->variables.size()) + "\n";
     output += std::string("  .return ") + ((ret_type == "void") ? "0 \n" : "1 \n");
-    output += "  .locals " + std::to_string(locals->variables.size()) + "\n";
+    output += "  .locals " + std::to_string(local_counter) + "\n";
 
     /* output statement code */
     for (auto i : body) {
