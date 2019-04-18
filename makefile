@@ -7,7 +7,7 @@ BISON = bison
 
 OUTPUT = compile
 
-SOURCES = src/parser.cc src/scanner.cc src/driver.cc src/main.cc src/util.cc src/gen.cc $(wildcard src/ast/*.cc)
+SOURCES = src/parser.cc src/scanner.cc src/driver.cc src/main.cc src/util.cc $(wildcard src/ast/*.cc)
 OBJECTS = $(SOURCES:.cc=.o)
 
 all: $(OUTPUT)

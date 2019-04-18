@@ -1,18 +1,19 @@
 #pragma once
 #include "node.hh"
 #include "expression.hh"
-#include "../gen.hh"
 
 namespace AST {
     class Scope;
     class Function;
+    class Program;
 
     class Statement : public Node {
     public:
         Statement(location loc);
 
         virtual void check_types(Scope* global_scope, Function* func, bool verbose);
-        virtual void ic_reserve_ids(Gen::CodegenState* gen);
+        virtual void reserve(AST::Program* prg);
+        virtual std::string gen_code(Scope* global_scope, Function* func);
     };
 
     class ExpressionStatement : public Statement {
@@ -21,7 +22,8 @@ namespace AST {
         void write();
 
         void check_types(Scope* global_scope, Function* func, bool verbose);
-        void ic_reserve_ids(Gen::CodegenState* gen);
+        void reserve(AST::Program* prg);
+        std::string gen_code(Scope* global_scope, Function* func);
 
         Expression* expr;
     };
@@ -42,6 +44,8 @@ namespace AST {
 
         void check_types(Scope* global_scope, Function* func, bool verbose);
         void write();
+        void reserve(AST::Program* prg);
+        std::string gen_code(Scope* global_scope, Function* func);
 
         Expression* expr;
     };
@@ -53,6 +57,7 @@ namespace AST {
 
         void write();
         void check_types(Scope* global_scope, Function* func, bool verbose);
+        void reserve(AST::Program* prg);
 
         bool has_else;
         Expression* cond;
@@ -65,6 +70,7 @@ namespace AST {
 
         void write();
         void check_types(Scope* global_scope, Function* func, bool verbose);
+        void reserve(AST::Program* prg);
 
         /* 3 optional values force us to use NULL pointers when there is no expression */
         Expression* init, *cond, *next;
@@ -77,6 +83,7 @@ namespace AST {
 
         void write();
         void check_types(Scope* global_scope, Function* func, bool verbose);
+        void reserve(AST::Program* prg);
 
         Expression* cond;
         std::vector<Statement*> body;
@@ -88,6 +95,7 @@ namespace AST {
 
         void write();
         void check_types(Scope* global_scope, Function* func, bool verbose);
+        void reserve(AST::Program* prg);
 
         Expression* cond;
         std::vector<Statement*> body;

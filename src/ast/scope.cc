@@ -104,6 +104,7 @@ void AST::Scope::push_function(AST::Function* f) {
 
             /* if we define the function, set the location */
             if (f->defined) {
+                i->params = f->params;
                 i->locals = f->locals;
                 i->body = f->body;
                 i->loc = f->loc;

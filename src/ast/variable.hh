@@ -24,5 +24,11 @@ namespace AST {
 
         std::string base_type;
         VariableName* name;
+
+        /* 
+         * generated code location -- set either by AST::Program (globals)
+         * or by AST::Function (locals, parameters)
+         */
+        std::string code_location;
     };
 }

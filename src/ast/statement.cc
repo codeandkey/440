@@ -10,7 +10,11 @@ void AST::Statement::check_types(Scope* global_scope, Function* func, bool verbo
     return;
 }
 
-void AST::Statement::ic_reserve_ids(Gen::CodegenState* gen) {}
+void AST::Statement::reserve(AST::Program* prg) {}
+
+std::string AST::Statement::gen_code(Scope* global_scope, Function* func) {
+    return "";
+}
 
 /* ExpressionStatement */
 AST::ExpressionStatement::ExpressionStatement(location loc, AST::Expression* expr) : Statement(loc), expr(expr) {}
@@ -26,8 +30,12 @@ void AST::ExpressionStatement::check_types(Scope* global_scope, Function* func, 
     if (verbose) std::cout << "Expression at " << *(loc.begin.filename) << ":" << std::to_string(loc.begin.line) << " has type " << expr_type << "\n";
 }
 
-void AST::ExpressionStatement::ic_reserve_ids(Gen::CodegenState* gen) {
-    expr->ic_reserve_ids(gen);
+void AST::ExpressionStatement::reserve(AST::Program* prg) {
+    expr->reserve(prg);
+}
+
+std::string AST::ExpressionStatement::gen_code(Scope* global_scope, Function* func) {
+    return expr->gen_code(global_scope, func, false);
 }
 
 /* BreakStatement */
@@ -61,8 +69,15 @@ void AST::ReturnStatement::check_types(Scope* scope, Function* func, bool verbos
     }
 }
 
-void AST::ReturnStatement::ic_reserve_ids(Gen::CodegenState* gen) {
-    if (expr) expr->ic_reserve_ids(gen);
+void AST::ReturnStatement::reserve(AST::Program* prg) {
+    if (expr) expr->reserve(prg);
+}
+
+std::string AST::ReturnStatement::gen_code(Scope* scope, Function* func) {
+    std::string out;
+    if (expr) out = expr->gen_code(scope, func, true);
+    out += "    ret\n";
+    return out;
 }
 
 /* IfStatement */
@@ -101,15 +116,15 @@ void AST::IfStatement::check_types(Scope* global_scope, Function* func, bool ver
     }
 }
 
-void AST::IfStatement::ic_reserve_ids(Gen::CodegenState* gen) {
-    cond->ic_reserve_ids(gen);
+void AST::IfStatement::reserve(AST::Program* prg) {
+    cond->reserve(prg);
 
     for (auto i : body) {
-        i->ic_reserve_ids(gen);
+        i->reserve(prg);
     }
 
     for (auto i : else_body) {
-        i->ic_reserve_ids(gen);
+        i->reserve(prg);
     }
 }
 
@@ -153,13 +168,13 @@ void AST::ForStatement::check_types(Scope* global_scope, Function* func, bool ve
     }
 }
 
-void AST::ForStatement::ic_reserve_ids(Gen::CodegenState* gen) {
-    if (init) init->ic_reserve_ids(gen);
-    if (cond) cond->ic_reserve_ids(gen);
-    if (next) next->ic_reserve_ids(gen);
+void AST::ForStatement::reserve(AST::Program* prg) {
+    if (init) init->reserve(prg);
+    if (cond) cond->reserve(prg);
+    if (next) next->reserve(prg);
 
     for (auto i : body) {
-        i->ic_reserve_ids(gen);
+        i->reserve(prg);
     }
 }
 
@@ -188,11 +203,11 @@ void AST::WhileStatement::check_types(Scope* global_scope, Function* func, bool 
     }
 }
 
-void AST::WhileStatement::ic_reserve_ids(Gen::CodegenState* gen) {
-    cond->ic_reserve_ids(gen);
+void AST::WhileStatement::reserve(AST::Program* prg) {
+    cond->reserve(prg);
 
     for (auto i : body) {
-        i->ic_reserve_ids(gen);
+        i->reserve(prg);
     }
 }
 
@@ -221,10 +236,10 @@ void AST::DoWhileStatement::check_types(Scope* global_scope, Function* func, boo
     }
 }
 
-void AST::DoWhileStatement::ic_reserve_ids(Gen::CodegenState* gen) {
-    cond->ic_reserve_ids(gen);
+void AST::DoWhileStatement::reserve(AST::Program* prg) {
+    cond->reserve(prg);
 
     for (auto i : body) {
-        i->ic_reserve_ids(gen);
+        i->reserve(prg);
     }
 }
