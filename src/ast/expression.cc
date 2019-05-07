@@ -553,12 +553,30 @@ std::string AST::BinaryOpExpression::gen_code(Scope* global_scope, Function* fun
 
         switch (t) {
             case Type::DPIPE:
+                /* we need one label for positive results, and one label as a post-operation */
                 /* if lhs result is nonzero, we push 1 and stop. */
                 /* if lhs result is zero, we check the result of the rhs */
                 tmp_label = func->make_label(); /* post-expr label */
+                tmp_label2 = func->make_label();
                 out += std::string("    !=0") + operand_type[0] + " " + tmp_label + "\n";
+                out += rhs->gen_code(global_scope, func, true);
+                out += std::string("    !=0") + operand_type[0] + " " + tmp_label + "\n";
+                out += "    pushv 0x0\n";
+                out += std::string("    goto ") + tmp_label2 + "\n";
+                out += tmp_label + ":    pushv 0x1\n";
+                out += tmp_label2 + ":";
                 break;
             case Type::DAMP:
+                /* short-circuiting AND works in the same way. we just flip the conditions */
+                tmp_label = func->make_label(); /* post-expr label */
+                tmp_label2 = func->make_label();
+                out += std::string("    ==0") + operand_type[0] + " " + tmp_label + "\n";
+                out += rhs->gen_code(global_scope, func, true);
+                out += std::string("    ==0") + operand_type[0] + " " + tmp_label + "\n";
+                out += "    pushv 0x1\n";
+                out += std::string("    goto ") + tmp_label2 + "\n";
+                out += tmp_label + ":    pushv 0x0\n";
+                out += tmp_label2 + ":";
                 break;
             default:
                 break;
