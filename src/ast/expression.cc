@@ -539,14 +539,37 @@ void AST::BinaryOpExpression::reserve(AST::Program* prg) {
 
 std::string AST::BinaryOpExpression::gen_code(Scope* global_scope, Function* func, bool keep_result) {
     /*
-     * with binary operations we need to be very specific about how we evaluate expressions
-     *
-     * right now we don't need any short circuiting, but here is where we
-     * may have to conditionally evaluate the second expression depending on the
-     * result of the first.
+     * the logic for short-circuiting operations is so different from the others, we just
+     * make a seperate case for codegen and return early.
      */
 
-    std::string out = lhs->gen_code(global_scope, func, keep_result);
+    std::string out;
+    std::string tmp_label, tmp_label2; /* labels used by comparators */
+
+    if (t == Type::DPIPE || t == Type::DAMP) {
+        /* specialized generation for shortcircuiting ops */
+        /* eval LHS no matter what */
+        out += lhs->gen_code(global_scope, func, true);
+
+        switch (t) {
+            case Type::DPIPE:
+                /* if lhs result is nonzero, we push 1 and stop. */
+                /* if lhs result is zero, we check the result of the rhs */
+                tmp_label = func->make_label(); /* post-expr label */
+                out += std::string("    !=0") + operand_type[0] + " " + tmp_label + "\n";
+                break;
+            case Type::DAMP:
+                break;
+            default:
+                break;
+        }
+
+        return out;
+    }
+
+    /* non-shortcircuiting ops */
+
+    out = lhs->gen_code(global_scope, func, keep_result);
     out += rhs->gen_code(global_scope, func, keep_result);
 
     if (!keep_result) return out;
@@ -557,8 +580,6 @@ std::string AST::BinaryOpExpression::gen_code(Scope* global_scope, Function* fun
      * so, we just make labels and push constants which looks ugly, but
      * results in correct code
      */
-
-    std::string tmp_label, tmp_label2; /* labels used by comparators */
 
     switch (t) {
     case Type::EQUALS:
@@ -620,7 +641,7 @@ std::string AST::BinaryOpExpression::gen_code(Scope* global_scope, Function* fun
         break;
     case Type::DPIPE:
     case Type::DAMP:
-        throw yy::parser::syntax_error(loc, "conditional binary operators not implemented");
+        throw yy::parser::syntax_error(loc, "unexpected codepath, standard codegen for shortcircuiting operation");
     case Type::PLUS:
         out += std::string("    +") + operand_type[0] + "\n";
         break;
