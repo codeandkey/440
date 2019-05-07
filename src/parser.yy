@@ -196,10 +196,10 @@ statement:
     | CONTINUE SEMI                        { $$ = new AST::ContinueStatement(@1); }
     | RETURN optional_expression SEMI      { $$ = new AST::ReturnStatement(@1, $2); }
     | IF LPAR expression RPAR control_body                   { $$ = new AST::IfStatement(@1, $3, $5); }
-    | IF LPAR expression RPAR control_body ELSE control_body { $$ = new AST::IfStatement(@1, $3, $5); }
+    | IF LPAR expression RPAR control_body ELSE control_body { $$ = new AST::IfStatement(@1, $3, $5, $7); }
     | FOR LPAR optional_expression SEMI optional_expression SEMI optional_expression RPAR control_body { $$ = new AST::ForStatement(@1, $3, $5, $7, $9); }
     | WHILE LPAR expression RPAR control_body { $$ = new AST::WhileStatement(@1, $3, $5); }
-    | DO control_body WHILE LPAR expression RPAR { $$ = new AST::DoWhileStatement(@1, $5, $2); }
+    | DO control_body WHILE LPAR expression RPAR SEMI { $$ = new AST::DoWhileStatement(@1, $5, $2); }
     ;
 
 optional_expression:

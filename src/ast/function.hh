@@ -28,5 +28,8 @@ namespace AST {
         std::string gen_code(Scope* global_scope);
 
         int local_counter = 0; /* counter for local variables, needed for array types */
+        int label_counter = 0;
+
+        std::string make_label();
     };
 }

@@ -110,3 +110,7 @@ std::string AST::Function::gen_code(Scope* global_scope) {
     output += "    ret\n.end FUNC\n";
     return output;
 }
+
+std::string AST::Function::make_label() {
+    return std::string("I") + std::to_string(label_counter++);
+}

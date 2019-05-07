@@ -14,6 +14,9 @@ namespace AST {
         virtual void check_types(Scope* global_scope, Function* func, bool verbose);
         virtual void reserve(AST::Program* prg);
         virtual std::string gen_code(Scope* global_scope, Function* func);
+
+        /* backpatch is just a string substitution */
+        std::string backpatch(std::string code, std::string sub, std::string repl);
     };
 
     class ExpressionStatement : public Statement {
@@ -59,6 +62,8 @@ namespace AST {
         void check_types(Scope* global_scope, Function* func, bool verbose);
         void reserve(AST::Program* prg);
 
+        std::string gen_code(Scope* scope, Function* func);
+
         bool has_else;
         Expression* cond;
         std::vector<Statement*> body, else_body;
@@ -71,6 +76,8 @@ namespace AST {
         void write();
         void check_types(Scope* global_scope, Function* func, bool verbose);
         void reserve(AST::Program* prg);
+
+        std::string gen_code(Scope* scope, Function* func);
 
         /* 3 optional values force us to use NULL pointers when there is no expression */
         Expression* init, *cond, *next;
@@ -85,6 +92,8 @@ namespace AST {
         void check_types(Scope* global_scope, Function* func, bool verbose);
         void reserve(AST::Program* prg);
 
+        std::string gen_code(Scope* scope, Function* func);
+
         Expression* cond;
         std::vector<Statement*> body;
     };
@@ -96,6 +105,8 @@ namespace AST {
         void write();
         void check_types(Scope* global_scope, Function* func, bool verbose);
         void reserve(AST::Program* prg);
+
+        std::string gen_code(Scope* scope, Function* func);
 
         Expression* cond;
         std::vector<Statement*> body;
