@@ -477,14 +477,22 @@ std::string AST::UnaryOpExpression::gen_code(Scope* global_scope, Function* func
      * we only need the result from the operand code if we need a result from our operation.
      */
 
+    std::string tmp_label, tmp_label2; /* for unary ! */
+    std::string operand_type = operand->type(global_scope, func);
+
     if (!keep_result) return out;
 
     switch (t) {
     case Type::MINUS:
-        out += std::string("    neg") + operand->type(global_scope, func)[0] + "\n";
+        out += std::string("    neg") + operand_type[0] + "\n";
         break;
     case Type::BANG:
-        throw yy::parser::syntax_error(loc, "unary operator '!' not implemented");
+        tmp_label = func->make_label();
+        tmp_label2 = func->make_label();
+        out += std::string("    ==0") + operand_type[0] + " " + tmp_label + "\n";
+        out += "    pushv 0x0\n    goto " + tmp_label2 + "\n";
+        out += tmp_label + ":    pushv 0x1\n";
+        out += tmp_label2 + ":";
         break;
     case Type::TILDE:
         out += "    flip\n";
