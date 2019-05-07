@@ -54,8 +54,16 @@ std::string AST::ExpressionStatement::gen_code(Scope* global_scope, Function* fu
 /* BreakStatement */
 AST::BreakStatement::BreakStatement(location loc) : Statement(loc) {}
 
+std::string AST::BreakStatement::gen_code(Scope* scope, Function* func) {
+    return "    goto <POSTLOOP>\n";
+}
+
 /* ContinueStatement */
 AST::ContinueStatement::ContinueStatement(location loc) : Statement(loc) {}
+
+std::string AST::ContinueStatement::gen_code(Scope* scope, Function* func) {
+    return "    goto <PRELOOP>\n";
+}
 
 /* ReturnStatement */
 AST::ReturnStatement::ReturnStatement(location loc, Expression* expr) : Statement(loc), expr(expr) {}

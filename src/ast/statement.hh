@@ -34,11 +34,15 @@ namespace AST {
     class BreakStatement : public Statement {
     public:
         BreakStatement(location);
+
+        std::string gen_code(Scope* scope, Function* func);
     };
 
     class ContinueStatement : public Statement {
     public:
         ContinueStatement(location);
+
+        std::string gen_code(Scope* scope, Function* func);
     };
 
     class ReturnStatement : public Statement {
