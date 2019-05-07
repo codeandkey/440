@@ -36,7 +36,9 @@ The \texttt{AST::Program} has a \texttt{generate\_ir} function which recursively
 As our target architecture is stack-based, there was no need for register allocation. Each code generation function instead has a flag which indicates if a result from the code group should be left on the stack afterwards.
 This allows for a great deal of basic optimization -- for instance, if \texttt{-(1+2);} appears as a statement no code will be generated (as the result is simply discarded).
 However, this optimization is still safe with evaluation; \texttt{-(main());} will still generate code to call the \texttt{main()} function, although the return value will be discarded and no unary operation is executed.
-\texttt{AST::LValue} also required a special type of code generation, as some operations needed to retrieve and store a value seperately -- the generation functions were named \texttt{gen\_store\_code} and \texttt{gen\_retrieve\_code}.
+\texttt{AST::LValue} also required a special type of code generation, as some operations needed to retrieve and store a value seperately -- the generation functions were named \texttt{gen\_store\_code} and \texttt{gen\_retrieve\_code}. \\
+\subsubsection{Code generation: part 2}
+The compiler now supports branching in code generation. There were no major changes to code structure, but many \texttt{gen\_code} methods were implemented for the \texttt{AST::Statement} subclasses. There was also the introduction of \texttt{AST::Statement::backpatch}, which is just a string substitution helper. It is used to implement code generation for \texttt{break} and \texttt{continue} statements.
 \section{Sources}
 Any \texttt{.hh} files in this list have their implementation in their respective \texttt{.cc} file.\\
 \begin{center}
