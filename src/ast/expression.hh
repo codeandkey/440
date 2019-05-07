@@ -250,7 +250,10 @@ namespace AST {
         std::string type(Scope* global_scope, Function* func);
         void reserve(AST::Program* prg);
 
+        std::string gen_code(Scope* scope, Function* func, bool keep_result);
+
         Expression* cond, *pos, *neg;
+        std::string cond_type;
     };
 
     class CastExpression : public Expression {

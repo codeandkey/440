@@ -663,7 +663,7 @@ void AST::TernaryOpExpression::write() {
 }
 
 std::string AST::TernaryOpExpression::type(Scope* global_scope, Function* func) {
-    std::string cond_type = cond->type(global_scope, func);
+    cond_type = cond->type(global_scope, func);
     std::string pos_type = pos->type(global_scope, func);
     std::string neg_type = neg->type(global_scope, func);
 
@@ -682,6 +682,23 @@ void AST::TernaryOpExpression::reserve(AST::Program* prg) {
     cond->reserve(prg);
     pos->reserve(prg);
     neg->reserve(prg);
+}
+
+std::string AST::TernaryOpExpression::gen_code(Scope* scope, Function* func, bool keep_result) {
+    /* short-circuited ternary op implementation */
+    /* eval the condition no matter what */
+
+    std::string output = cond->gen_code(scope, func, true);
+    std::string neg_label = func->make_label(), post_neg_label = func->make_label();
+
+    output += std::string("    ==0") + cond_type[0] + " " + neg_label + "\n";
+    output += pos->gen_code(scope, func, keep_result);
+    output += std::string("    goto ") + post_neg_label + "\n";
+    output += neg_label + ":";
+    output += neg->gen_code(scope, func, keep_result);
+    output += post_neg_label + ":";
+
+    return output;
 }
 
 /* CastExpresion */
