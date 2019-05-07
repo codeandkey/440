@@ -551,13 +551,73 @@ std::string AST::BinaryOpExpression::gen_code(Scope* global_scope, Function* fun
 
     if (!keep_result) return out;
 
+    /* 
+     * it would be nice to use the goto labels for expression directly, but
+     * we need to be able to evaluate binary comparisons to the correct value (char)
+     * so, we just make labels and push constants which looks ugly, but
+     * results in correct code
+     */
+
+    std::string tmp_label, tmp_label2; /* labels used by comparators */
+
     switch (t) {
     case Type::EQUALS:
+        /* push a 1 if the operands are equal */
+        tmp_label = func->make_label();
+        tmp_label2 = func->make_label();
+        out += std::string("    ==") + operand_type[0] + " " + tmp_label + "\n";
+        out += "    pushv 0x0\n";
+        out += "    goto " + tmp_label2 + "\n";
+        out += tmp_label + ":    pushv 0x1\n";
+        out += tmp_label2 + ":";
+        break;
     case Type::NEQUAL:
+        /* push a 1 if the operands are not equal */
+        /* same as equal, we just change the operator */
+        tmp_label = func->make_label();
+        tmp_label2 = func->make_label();
+        out += std::string("    !=") + operand_type[0] + " " + tmp_label + "\n";
+        out += "    pushv 0x0\n";
+        out += "    goto " + tmp_label2 + "\n";
+        out += tmp_label + ":    pushv 0x1\n";
+        out += tmp_label2 + ":";
+        break;
     case Type::GT:
+        tmp_label = func->make_label();
+        tmp_label2 = func->make_label();
+        out += std::string("    >") + operand_type[0] + " " + tmp_label + "\n";
+        out += "    pushv 0x0\n";
+        out += "    goto " + tmp_label2 + "\n";
+        out += tmp_label + ":    pushv 0x1\n";
+        out += tmp_label2 + ":";
+        break;
     case Type::GE:
+        tmp_label = func->make_label();
+        tmp_label2 = func->make_label();
+        out += std::string("    >=") + operand_type[0] + " " + tmp_label + "\n";
+        out += "    pushv 0x0\n";
+        out += "    goto " + tmp_label2 + "\n";
+        out += tmp_label + ":    pushv 0x1\n";
+        out += tmp_label2 + ":";
+        break;
     case Type::LT:
+        tmp_label = func->make_label();
+        tmp_label2 = func->make_label();
+        out += std::string("    <") + operand_type[0] + " " + tmp_label + "\n";
+        out += "    pushv 0x0\n";
+        out += "    goto " + tmp_label2 + "\n";
+        out += tmp_label + ":    pushv 0x1\n";
+        out += tmp_label2 + ":";
+        break;
     case Type::LE:
+        tmp_label = func->make_label();
+        tmp_label2 = func->make_label();
+        out += std::string("    <=") + operand_type[0] + " " + tmp_label + "\n";
+        out += "    pushv 0x0\n";
+        out += "    goto " + tmp_label2 + "\n";
+        out += tmp_label + ":    pushv 0x1\n";
+        out += tmp_label2 + ":";
+        break;
     case Type::DPIPE:
     case Type::DAMP:
         throw yy::parser::syntax_error(loc, "conditional binary operators not implemented");
